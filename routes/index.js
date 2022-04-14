@@ -198,23 +198,35 @@ router.post('/add-ticket', async function(req, res, next) {
   var productId = req.query.ticketId;
   var journeyChoose = await journeyModel.findById(productId)
 
-  ticketsCard.push({
-    departure: journeyChoose.departure,
-    arrival: journeyChoose.arrival,
-    date: journeyChoose.date,
-    departureTime: journeyChoose.departureTime,
-    price: journeyChoose.price,
-    quantity: req.body.quantity
-    
-  })
-  console.log(req.body.quantity)
+  /* Vérifions si le même ticket n'a pas déjà été ajouté */
+  for (var i = 0; i < tickersCard.length; i++) {
+    if (tickersCard[i].id == journeyChoose.id) {
+      tickersCard[i].qauntity += req.body.quantity
+    }
+    else {
+      ticketsCard.push({
+        id : journeyChoose.id,
+        departure: journeyChoose.departure,
+        arrival: journeyChoose.arrival,
+        date: journeyChoose.date,
+        departureTime: journeyChoose.departureTime,
+        price: journeyChoose.price,
+        quantity: req.body.quantity
+      })
+      
+    }
 
-  
+
+
+  }
+
+
+  console.log(req.body.quantity)
   
   console.log(productId)
   console.log(ticketsCard)
 
-  res.render('homepage', { title: 'TickeTac', user: req.session.user});
+  res.render('homepage', { title: 'TickeTac', user: req.session.user , ticketsCard : req.session.ticketsCard});
 });
 
 // MY CARD
@@ -231,7 +243,7 @@ router.get('/delete-ticket', function(req, res, next) {
 //
 router.post('/update-ticket', function(req, res, next) {
   var ticketsCard = req.session.ticketsCard
-  
+
   /* J'update la quantité en récupérant : req.body.indice et req.body.quantity */
   ticketsCard[Number(req.body.indice)].quantity = req.body.quantity
 
