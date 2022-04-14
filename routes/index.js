@@ -12,37 +12,127 @@ var date = ["2018-11-20","2018-11-21","2018-11-22","2018-11-23","2018-11-24"]
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'TickeTac' });
+  var alreadyMember = false;
+  var newUser = false;
+  res.render('index', { title: 'TickeTac', alreadyMember, newUser });
 });
 
-/* Sign In */
+
+// ===================================================== USER CONNEXION PART  =====================================================
+
+// SIGN UP
+// 
 router.post('/signUp', async function(req, res, next) {
+  var alreadyMember = false;
 
-   /* Véfificaton si le compte éxiste déjà */
-   var account = await userModel.findOne({ email: req.body.email.toLowerCase() });
-   console.log(req.body.email)
+  /* Véfificaton si le compte éxiste déjà */
+  var account = await userModel.findOne({ email: req.session.email });
 
-   if (account == null) {
+  // __________________________ SUCCESS  __________________________
+  /* Ajout de l'utilisateur à la base de données */
+  if (account == null) {
     var newUser = new userModel({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
-      email: req.body.email.toLowerCase(),
+      email: req.body.email,
       password: req.body.password,
       date_insert: new Date(),
-    });
-
-    await newUser.save()
-   }
-
-  
+    })
 
 
-  res.render('index', { title: 'TickeTac' });
+    /* J'enregistre dans la base de données */
+    var newUserSaved = await newUser.save()
+
+    /* Je créer une session utilisateur avec les données entrée*/
+    req.session.user = {
+      email: newUserSaved.email,
+      firstName: newUserSaved.firstName,
+      id : newUserSaved._id,
+    }
+
+    /* Redirige l'utilisateur vers la homepage */
+    res.redirect('homepage')
+  }
+
+  // __________________________ ECHEC  __________________________
+   /* Pour renvoyé un message d'erreur */
+  else {
+    /* Affichage message erreur */
+    alreadyMember = true
+
+  }
+
+
+
+
+  res.render('index', { title: 'TickeTac', alreadyMember });
 });
 
-/* Sign In */
+// SIGN IN
+//
 router.post('/signIn', async function(req, res, next) {
-  res.render('index', { title: 'TickeTac' });
+
+  var newUser, alreadyMember = false;
+
+  /* Vérifications si le compte existe */
+  var account = await userModel.findOne({
+    email: req.body.email,
+    password: req.body.password });
+
+  // __________________________ SUCCESS  __________________________
+  if (account !== null) {
+    req.session.user = {
+      email: account.email,
+      firstName: account.firstName,
+      id : account._id,
+    }
+    res.redirect('/homepage')
+  }
+  // __________________________ ECHEC  __________________________
+  else {
+    /* Affichage message erreur */
+    newUser = true
+
+    res.render('index', { title: 'TickeTac', newUser, alreadyMember });
+  }
+
+  
+});
+
+// LOG OUT
+//
+router.get('/logout', function(req, res, next) {
+  req.session.user = null
+  res.redirect('index');
+});
+
+// ===================================================================================================================================
+
+
+router.get('/homepage', function(req, res, next) {
+  if (req.session.user === null) {
+    res.redirect('/')
+  }else {
+    var user = req.session.user
+  }
+ 
+  res.render('homepage', { title: 'TickeTac', user });
+});
+
+router.get('/journeyspage', function(req, res, next) {
+  res.render('journeyspage', { title: 'TickeTac' });
+});
+
+router.get('/mylasttrip', function(req, res, next) {
+  res.render('mylasttrip', { title: 'TickeTac' });
+});
+
+router.get('/searchError', function(req, res, next) {
+  res.render('searchError', { title: 'TickeTac' });
+});
+
+router.get('/card', function(req, res, next) {
+  res.render('card', { title: 'TickeTac' });
 });
 
 
@@ -75,26 +165,5 @@ router.get('/save', async function(req, res, next) {
   }
   res.render('index', { title: 'Express' });
 });
-
-router.get('/homepage', function(req, res, next) {
-  res.render('homepage', { title: 'TickeTac' });
-});
-
-router.get('/journeyspage', function(req, res, next) {
-  res.render('journeyspage', { title: 'TickeTac' });
-});
-
-router.get('/mylasttrip', function(req, res, next) {
-  res.render('mylasttrip', { title: 'TickeTac' });
-});
-
-router.get('/searchError', function(req, res, next) {
-  res.render('searchError', { title: 'TickeTac' });
-});
-
-router.get('/card', function(req, res, next) {
-  res.render('card', { title: 'TickeTac' });
-});
-
 
 module.exports = router;

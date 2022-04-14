@@ -32,16 +32,18 @@
               <!-- form name -->
               <p>Sign In : </p>
 
-              <form action="signIn" method="post"class="d-flex flex-column justify-content-between align-items-center" action="" method="post">
+              <form action="/signIn" method="post" class="d-flex flex-column justify-content-between align-items-center" action="" method="post">
                 <!-- email -->
                 <input class="p-2 my-3 fs-5" placeholder="email" type="text" name="email" id="">
                 <!-- Password -->
                 <input class="p-2 my-3 fs-5" placeholder="password"  type="password" name="password" id="">
 
                 <div class="mt-2 text-center">
-                  <button type="button" class="btn btn-danger btn-lg">Confirm</button>
+                  <button type="submit" class="btn btn-danger btn-lg">Confirm</button>
                   <!-- User not found -->
-                  <p class="fs-5 mt-3">Erreur s'affiche ici</p>
+                  <% if (newUser) {%> 
+                    <p class="fs-5 mt-3">Create an account</p>
+                    <% } %> 
                 </div>
                 
               </form>
@@ -67,7 +69,9 @@
                 <div class="mt-2 text-center">
                   <button type="submit" class="btn btn-danger btn-lg">Confirm</button>
                   <!-- User exist in the database -->
-                  <p class="fs-5 mt-3">Erreur s'affiche ici</p>
+                  <% if (alreadyMember) {%> 
+                  <p class="fs-5 mt-3">You are already registered</p>
+                  <% } %> 
                 </div>
                 
               </form>
