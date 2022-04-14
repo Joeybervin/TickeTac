@@ -31,6 +31,7 @@
 
           <!-- BOUCLE A COMMENCER ICI -->
           <% for (var i = 0; i < journeysFound.length; i++) {%>
+            <form action="/add-ticket?ticketId=<%=journeysFound[i].id%>" method="post" >
             <li   class="trainsFind list-group-item mb-3 d-flex align-items-center justify-content-between py-4">
 
               <!-- DEPARTURE / DESTINATION CITIES -->
@@ -38,11 +39,16 @@
 
             <!-- DEPARTURE TIME -->
             <p class="mb-0">Train departure at : <%= journeysFound[i].departureTime %></p>
-
-            <!-- PRICE -->
-            <div class="d-flex align-items-center">
-              <p class="mb-0 fw-bold fs-4"><%= journeysFound[i].price %> €</p>
-                <form action="/add-Ticket?ticketId=<%=journeysFound[i].id%>" method="post" >
+            
+              <!-- QUANTITY -->
+              <div width="100">
+                <input value="1" class="form-control px-0 text-center" width="100px" type="number" name="quantity">
+              </div>
+              
+              <!-- PRICE -->
+              <div class="d-flex align-items-center">
+                <p class="mb-0 fw-bold fs-4"><%= journeysFound[i].price %> €</p>
+                
                   <button type="submit" class="btn btn-danger btn-lg ms-4">Ok</button>
                 </form>
             </div>

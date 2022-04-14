@@ -19,7 +19,7 @@ router.get('/', function(req, res, next) {
 });
 
 
-// ===================================================== USER CONNEXION PART  =====================================================
+// ======================================== USER CONNEXION PART  ========================================
 
 // SIGN UP
 // 
@@ -150,9 +150,7 @@ router.post('/journeyspage',async function(req, res, next) {
   res.render('journeyspage', { title: 'TickeTac', user: req.session.user, ticketDate , journeysFound});
 });
 
-router.get('/card', function(req, res, next) {
-  res.render('card', { title: 'TickeTac', user: req.session.user });
-});
+
 
 
 // MY LAST TRIP
@@ -171,9 +169,76 @@ router.get('/mylasttrip', async function(req, res, next) {
   res.render('searchError', { title: 'TickeTac', user: req.session.user });
 }); 
 
+
+// ======================================== USER CART ========================================
+
+// MY CARD
+//
 router.get('/card', function(req, res, next) {
-  res.render('card', { title: 'TickeTac', user: req.session.user });
+  var ticketsCard = req.session.ticketsCard
+
+
+
+
+  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard  });
 });
+
+// MY CARD
+//
+router.post('/add-ticket', async function(req, res, next) {
+
+  /* Je créer une session ppur mon panier */
+  if (req.session.ticketsCard == undefined) {
+    req.session.ticketsCard = []
+  }
+
+  var ticketsCard = req.session.ticketsCard
+
+  /* Ajout produit au panier */
+  var productId = req.query.ticketId;
+  var journeyChoose = await journeyModel.findById(productId)
+
+  ticketsCard.push({
+    departure: journeyChoose.departure,
+    arrival: journeyChoose.arrival,
+    date: journeyChoose.date,
+    departureTime: journeyChoose.departureTime,
+    price: journeyChoose.price,
+    quantity: req.body.quantity
+    
+  })
+  console.log(req.body.quantity)
+
+  
+  
+  console.log(productId)
+  console.log(ticketsCard)
+
+  res.render('homepage', { title: 'TickeTac', user: req.session.user});
+});
+
+// MY CARD
+//
+router.get('/delete-ticket', function(req, res, next) {
+  var ticketsCard = req.session.ticketsCard
+
+  ticket.splice(req.query.ticketId,1)
+
+  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard  });
+});
+
+// MY CARD
+//
+router.post('/update-ticket', function(req, res, next) {
+  var ticketsCard = req.session.ticketsCard
+  
+  /* J'update la quantité en récupérant : req.body.indice et req.body.quantity */
+  ticketsCard[Number(req.body.indice)].quantity = req.body.quantity
+
+  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard  });
+});
+
+
 
 
 // Remplissage de la base de donnée, une fois suffit
