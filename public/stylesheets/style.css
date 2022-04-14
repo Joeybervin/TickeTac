@@ -28,6 +28,12 @@ a,li {
 
 /* JOURNEYSPAGE */
 
-.trainsFind {
-  width : 65vw
+.trainsFind{
+  width : 65vw;
 }
+
+.table-borderless {
+  width : 75vw;
+}
+
+/* CARD */
