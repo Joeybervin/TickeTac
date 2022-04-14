@@ -1,8 +1,16 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+body,#wrapper,html {
+  overflow-x: hidden;
+  height:100%;
+  max-width: 100%;
+  background-image: linear-gradient(to top, #244b88, #3c67a5, #5485c3, #6da3e1, #87c3ff);
+
+
 }
 
-a {
-  color: #00B7FF;
+.container {
+  max-height:100%;
+}
+
+a,li {
+  color: black;
 }
