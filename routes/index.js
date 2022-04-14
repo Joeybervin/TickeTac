@@ -124,8 +124,17 @@ router.get('/journeyspage', function(req, res, next) {
   res.render('journeyspage', { title: 'TickeTac' });
 });
 
-router.get('/mylasttrip', function(req, res, next) {
-  res.render('mylasttrip', { title: 'TickeTac' });
+router.get('/mylasttrip', async function(req, res, next) {
+
+  /* Ma session */
+  var user = req.session.user
+
+  /* Je vais chercher tous les trajets de mon user */
+  var userJourneys = await userModel.findById(user.id).populate('journeysId').exec()
+
+
+
+  res.render('mylasttrip', { title: 'TickeTac', user , userJourneys });
 });
 
 router.get('/searchError', function(req, res, next) {

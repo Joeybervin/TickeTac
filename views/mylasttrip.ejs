@@ -38,28 +38,40 @@
           <!-- PRODUCTS LIST -->
           <tbody>
 
-            <!-- Product -->
-            <!-- Boucle à commencer ici -->
-            <tr>
+            
+            <!-- Si l'utilisateur n'a jamais passé de commande -->
+            <% if (userJourneys.journeysId.length == 0) { %> 
 
+            <tr class="text-center table-secondary">
+              <td class="text-center" colspan="4">No tickets</td>
+            </tr>
+
+            <% } else { %>
+
+            <% for (var i = 0; i < userJourneys.journeysId.length; i++) {%> 
+              <!-- Ticket -->
+            <tr>
+          
               <!-- DATE day/month/year-->
-              <td>14/04/2022</td>
+              <td><%= userJourneys.journeysId.date %>2</td>
               
-              <!-- DEPARTURE / DESTINATION CITIES -->
-              <td>Ville <span> / </span> Ville</td>
+              <!-- DEPARTURE / ARRIVAL CITIES -->
+              <td><%= userJourneys.journeysId.departure %> <span> / </span> <%= userJourneys.journeysId.arrival %></td>
               
               <!-- DEPARTURE TIME -->
-              <td>15:00 pm</td>
+              <td><%= userJourneys.journeysId.departureTime %></td>
 
               <!-- PRICE -->
-              <td>??? €</td>
+              <td><%= userJourneys.journeysId.price %> €</td>
             </tr>
+            <% } %>
+            <% } %> 
           </tbody>
           
         </table>
 
         <!-- APPARITION POP-UP -->
-        <a href="/" class="ms-auto me-3">
+        <a href="/homepage" class="ms-auto me-3">
           <button type="button" class="btn btn-danger btn-lg ms-4">Home</button>
         </a>
         
