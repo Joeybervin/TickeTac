@@ -28,22 +28,27 @@
         <ul class="list-group">
 
           <!-- BOUCLE A COMMENCER ICI -->
-          <li   class="trainsFind list-group-item mb-3 d-flex align-items-center justify-content-between py-4">
+          <% for (var i = 0; i < journeysFound.length; i++) {%>
+            <li   class="trainsFind list-group-item mb-3 d-flex align-items-center justify-content-between py-4">
 
-             <!-- DEPARTURE / DESTINATION CITIES -->
-          <p class="mb-0 fw-bold fs-5">Départ ??<span> / </span>Arrivé ??</p>
+              <!-- DEPARTURE / DESTINATION CITIES -->
+            <p class="mb-0 fw-bold fs-5"><%= journeysFound.departure %><span> / </span><%= journeysFound.arrival %></p>
 
-          <!-- DEPARTURE TIME -->
-          <p class="mb-0">Train departure at : <span>??</span></p>
+            <!-- DEPARTURE TIME -->
+            <p class="mb-0">Train departure at : <%= journeysFound.departureTime %></p>
 
-          <!-- PRICE -->
-          <div class="d-flex align-items-center">
-            <p class="mb-0 fw-bold fs-4"><span>??</span> €</p>
-            <button type="button" class="btn btn-danger btn-lg ms-4">Ok</button>
-          </div>
-          </li>
-
+            <!-- PRICE -->
+            <div class="d-flex align-items-center">
+              <p class="mb-0 fw-bold fs-4"><%= journeysFound.price %> €</p>
+              <button type="button" class="btn btn-danger btn-lg ms-4">Ok</button>
+            </div>
+            </li>
+          <% } %> 
         </ul>
+
+        <a href="/homepage" class="my-auto">
+          <button type="submit" class="btn btn-danger btn-lg ms-4">new search</button>
+        </a>
           
       </div>
     </div>

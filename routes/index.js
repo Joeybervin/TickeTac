@@ -94,7 +94,7 @@ router.post('/signIn', async function(req, res, next) {
     /* Affichage message erreur */
     newUser = true
 
-    res.render('index', { title: 'TickeTac', newUser, alreadyMember });
+    res.render('index', { title: 'TickeTac', newUser, alreadyMember, user: req.session.user });
   }
 
   
@@ -117,13 +117,33 @@ router.get('/homepage',async  function(req, res, next) {
   }else {
     var user = req.session.user
   }
+
+
+
+
   res.render('homepage', { title: 'TickeTac', user });
 });
 
 // JOURNEYS PAGE
 //
-router.get('/journeyspage', function(req, res, next) {
-  res.render('journeyspage', { title: 'TickeTac' });
+router.post('/journeyspage',async function(req, res, next) {
+
+  var ticketDate = new Date(req.body.date)
+  ticketDate.toLocaleDateString()
+
+  /* Je cherche le ticket que le user veut */
+  var journeysFound = await journeyModel.find({
+    departure : req.body.departure,
+    arrival : req.body.arrival,
+    date : req.body.date
+  })
+
+  /* du plus petit prix au plus gros */
+  journeysFound.sort((a,b) => Number(a.price) - Number(b-price));
+
+ 
+
+  res.render('journeyspage', { title: 'TickeTac', user: req.session.user, ticketDate, journeysFound});
 });
 
 // MY LAST TRIP
