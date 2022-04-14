@@ -14,7 +14,8 @@ var date = ["2018-11-20","2018-11-21","2018-11-22","2018-11-23","2018-11-24"]
 router.get('/', function(req, res, next) {
   var alreadyMember = false;
   var newUser = false;
-  res.render('index', { title: 'TickeTac', alreadyMember, newUser });
+  var user = null;
+  res.render('index', { title: 'TickeTac', alreadyMember, newUser, user });
 });
 
 
@@ -103,13 +104,13 @@ router.post('/signIn', async function(req, res, next) {
 //
 router.get('/logout', function(req, res, next) {
   req.session.user = null
-  res.redirect('index');
+  res.redirect('/');
 });
 
 // ===================================================================================================================================
 
 
-router.get('/homepage', function(req, res, next) {
+router.get('/homepage',async  function(req, res, next) {
   if (req.session.user === null) {
     res.redirect('/')
   }else {
