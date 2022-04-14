@@ -38,8 +38,10 @@
                 <!-- Password -->
                 <input class="p-2 my-3 fs-5" placeholder="password"  type="password" name="password" id="">
 
-                <div class="mt-2">
+                <div class="mt-2 text-center">
                   <button type="button" class="btn btn-danger btn-lg">Confirm</button>
+                  <!-- User not found -->
+                  <p class="fs-5 mt-3">Erreur s'affiche ici</p>
                 </div>
                 
               </form>
@@ -62,8 +64,10 @@
                 <!-- Password -->
                 <input class="p-2 my-3 fs-5" placeholder="Password"  type="password" name="password" id="">
 
-                <div class="mt-2">
+                <div class="mt-2 text-center">
                   <button type="button" class="btn btn-danger btn-lg">Confirm</button>
+                  <!-- User exist in the database -->
+                  <p class="fs-5 mt-3">Erreur s'affiche ici</p>
                 </div>
                 
               </form>
@@ -77,23 +81,9 @@
 
     </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+     <!-- FOOTER -->
+     <%- include('./template/footer') %> 
+    
 
   </div>
 </body>
