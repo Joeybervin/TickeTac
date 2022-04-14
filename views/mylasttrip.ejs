@@ -19,8 +19,56 @@
     <%- include('./template/header') %> 
 
     <!-- FRONT-END HERE -->
+    <div class="d-flex justify-content-center mt-5 p-5">
+      <div class="d-flex flex-column align-items-center" >
 
+        <p style="color: #fff" class="fs-1 me-auto ms-5">My tickets:</p>
 
+        <!-- USER CARD LIST -->
+        <table class="table table-borderless bg-white mt-3">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Journey</th>
+              <th scope="col">Departure time</th>
+              <th scope="col">Price</th>
+            </tr>
+          </thead>
+
+          <!-- PRODUCTS LIST -->
+          <tbody>
+
+            <!-- Product -->
+            <!-- Boucle à commencer ici -->
+            <tr>
+
+              <!-- DATE day/month/year-->
+              <td>14/04/2022</td>
+              
+              <!-- DEPARTURE / DESTINATION CITIES -->
+              <td>Ville <span> / </span> Ville</td>
+              
+              <!-- DEPARTURE TIME -->
+              <td>15:00 pm</td>
+
+              <!-- PRICE -->
+              <td>??? €</td>
+            </tr>
+          </tbody>
+          
+        </table>
+
+        <!-- APPARITION POP-UP -->
+        <a href="/" class="ms-auto me-3">
+          <button type="button" class="btn btn-danger btn-lg ms-4">Home</button>
+        </a>
+        
+          
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <%- include('./template/footer') %> 
     
   </div>
 </body>
