@@ -15,6 +15,36 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'TickeTac' });
 });
 
+/* Sign In */
+router.post('/signUp', async function(req, res, next) {
+
+   /* Véfificaton si le compte éxiste déjà */
+   var account = await userModel.findOne({ email: req.body.email.toLowerCase() });
+   console.log(req.body.email)
+
+   if (account == null) {
+    var newUser = new userModel({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email.toLowerCase(),
+      password: req.body.password,
+      date_insert: new Date(),
+    });
+
+    await newUser.save()
+   }
+
+  
+
+
+  res.render('index', { title: 'TickeTac' });
+});
+
+/* Sign In */
+router.post('/signIn', async function(req, res, next) {
+  res.render('index', { title: 'TickeTac' });
+});
+
 
 // Remplissage de la base de donnée, une fois suffit
 router.get('/save', async function(req, res, next) {

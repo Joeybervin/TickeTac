@@ -7,7 +7,7 @@ var userSchema = mongoose.Schema({
   email: String,
   password: String,
   date_insert: Date,
-  journeysId: [{type : mongoos.Schema.Types.ObjectId, ref : "journeys"}]
+  journeysId: [{type : mongoose.Schema.Types.ObjectId, ref : "journeys"}]
 });
 
 module.exports = mongoose.model('users', userSchema);
