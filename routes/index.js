@@ -118,7 +118,7 @@ router.get('/homepage',async  function(req, res, next) {
     var user = req.session.user
   }
 
-  res.render('homepage', { title: 'TickeTac', user });
+  res.render('homepage', { title: 'TickeTac', user: req.session.user });
 });
 
 // JOURNEYS PAGE
@@ -129,13 +129,13 @@ router.post('/journeyspage', async function(req, res, next) {
    var arrivalExist = await journeyModel.find({ arrival: req.body.destination });
    var dateExist = await journeyModel.find({ departureTime: req.body.departureTime });
      /* Si aucun train disponible pour la date sélectionnée => affichage page erreur */
-   if (dateExist == null) {
+   if (dateExist.length == 0) {
      res.redirect('/searchError')
      /* Si un ou plusieurs trajets possibles pour la date sélectionnée => affichage page trajets possibles */
    }else if (dateExist && departureExist && arrivalExist){
      res.redirect('/journeyspage')
    };
-  res.render('journeyspage', { title: 'TickeTac', dateExist, departureExist, arrivalExist });
+  res.render('journeyspage', { title: 'TickeTac', dateExist, departureExist, arrivalExist, user: req.session.user });
 });
 
 // MY LAST TRIP
@@ -148,15 +148,19 @@ router.get('/mylasttrip', async function(req, res, next) {
   /* Je vais chercher tous les trajets de mon user */
   var userJourneys = await userModel.findById(user.id).populate('journeysId').exec()
 
-  res.render('mylasttrip', { title: 'TickeTac', user , userJourneys });
+  res.render('mylasttrip', { title: 'TickeTac', user: req.session.user , userJourneys });
 });
 
+// ERROR PAGE
+//
 router.get('/searchError', function(req, res, next) {
-  res.render('searchError', { title: 'TickeTac' });
+  res.render('searchError', { title: 'TickeTac', user: req.session.user });
 });
 
+// CARD PAGE
+//
 router.get('/card', function(req, res, next) {
-  res.render('card', { title: 'TickeTac' });
+  res.render('card', { title: 'TickeTac', user: req.session.user });
 });
 
 
