@@ -109,21 +109,25 @@ router.get('/logout', function(req, res, next) {
 
 // ===================================================================================================================================
 
-
+// HOMEPAGE
+//
 router.get('/homepage',async  function(req, res, next) {
   if (req.session.user === null) {
     res.redirect('/')
   }else {
     var user = req.session.user
   }
- 
   res.render('homepage', { title: 'TickeTac', user });
 });
 
+// JOURNEYS PAGE
+//
 router.get('/journeyspage', function(req, res, next) {
   res.render('journeyspage', { title: 'TickeTac' });
 });
 
+// MY LAST TRIP
+//
 router.get('/mylasttrip', async function(req, res, next) {
 
   /* Ma session */
@@ -131,8 +135,6 @@ router.get('/mylasttrip', async function(req, res, next) {
 
   /* Je vais chercher tous les trajets de mon user */
   var userJourneys = await userModel.findById(user.id).populate('journeysId').exec()
-
-
 
   res.render('mylasttrip', { title: 'TickeTac', user , userJourneys });
 });
