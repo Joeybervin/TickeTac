@@ -28,20 +28,22 @@
         <ul class="list-group">
 
           <!-- BOUCLE A COMMENCER ICI -->
+          <% for(var i=0; i<journeys.length; i++){ %>
           <li   class="trainsFind list-group-item mb-3 d-flex align-items-center justify-content-between py-4">
 
              <!-- DEPARTURE / DESTINATION CITIES -->
-          <p class="mb-0 fw-bold fs-5">Départ ??<span> / </span>Arrivé ??</p>
+          <p class="mb-0 fw-bold fs-5"><%= journeys[i].departure %><span> / </span><%= journeys[i].arrival %></p>
 
           <!-- DEPARTURE TIME -->
-          <p class="mb-0">Train departure at : <span>??</span></p>
+          <p class="mb-0">Train departure at : <span><%= journeys[i].departureTime %></span></p>
 
           <!-- PRICE -->
           <div class="d-flex align-items-center">
-            <p class="mb-0 fw-bold fs-4"><span>??</span> €</p>
-            <button type="button" class="btn btn-danger btn-lg ms-4">Ok</button>
+            <p class="mb-0 fw-bold fs-4"><span><%= journeys[i].price %></span> €</p>
+            <button type="button" class="btn btn-danger btn-lg ms-4">OK</button>
           </div>
           </li>
+          <% } %>
 
         </ul>
           
