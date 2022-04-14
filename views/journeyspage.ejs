@@ -19,8 +19,48 @@
     <%- include('./template/header') %> 
 
     <!-- FRONT-END HERE -->
+    <div class="d-flex justify-content-center mt-5 p-5">
+      <div class="d-flex flex-column align-items-center" >
 
 
+
+        <!-- ERROR MESSAGE -->
+        <p style="color: #fff" class="fs-1">Tickets avaible on A FAIRE :</p>
+
+        <!-- TRAINS LIST -->
+
+        <ul class="list-group">
+
+          <!-- BOUCLE A COMMENCER ICI -->
+          <li   class="trainsFind list-group-item mb-3 d-flex align-items-center justify-content-between py-4">
+
+             <!-- DEPARTURE / DESTINATION CITIES -->
+          <p class="mb-0 fw-bold fs-5">Départ ??<span> / </span>Arrivé ??</p>
+
+          <!-- DEPARTURE TIME -->
+          <p class="mb-0">Train departure at : <span>??</span></p>
+
+          <!-- PRICE -->
+          <div class="d-flex align-items-center">
+            <p class="mb-0 fw-bold fs-4"><span>??</span> €</p>
+            <button type="button" class="btn btn-danger btn-lg ms-4">Ok</button>
+          </div>
+          </li>
+
+
+
+          
+        </ul>
+        
+          
+      </div>
+    </div>
+
+
+
+
+     <!-- FOOTER -->
+     <%- include('./template/footer') %> 
     
   </div>
 </body>

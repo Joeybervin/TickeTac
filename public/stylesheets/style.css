@@ -25,3 +25,9 @@ a,li {
   background-image: url("../images/landmark.png");
   background-repeat: no-repeat;
 }
+
+/* JOURNEYSPAGE */
+
+.trainsFind {
+  width : 65vw
+}
