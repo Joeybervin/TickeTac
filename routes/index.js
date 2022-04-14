@@ -111,19 +111,32 @@ router.get('/logout', function(req, res, next) {
 
 // HOMEPAGE
 //
-router.get('/homepage',async  function(req, res, next) {
+router.post('/homepage',async  function(req, res, next) {
   if (req.session.user === null) {
     res.redirect('/')
   }else {
     var user = req.session.user
   }
-  res.render('homepage', { title: 'TickeTac', user });
+
+  // Recherche de trajet à une date précise
+  var departureExist = await journeyModel.find({ departure: req.body.departure });
+  var arrivalExist = await journeyModel.find({ arrival: req.body.destination });
+  var dateExist = await journeyModel.find({ departureTime: req.body.departureTime });
+    /* Si aucun train disponible pour la date sélectionnée => affichage page erreur */
+  if (dateExist == null) {
+    res.redirect('/searchError')
+    /* Si un ou plusieurs trajets possibles pour la date sélectionnée => affichage page trajets possibles */
+  }else if (dateExist && departureExist && arrivalExist){
+    res.redirect('/journeyspage')
+  };
+  
+  res.render('homepage', { title: 'TickeTac', user, dateExist, departureExist, arrivalExist });
 });
 
 // JOURNEYS PAGE
 //
 router.get('/journeyspage', function(req, res, next) {
-  res.render('journeyspage', { title: 'TickeTac' });
+  res.render('journeyspage', { title: 'TickeTac'});
 });
 
 // MY LAST TRIP
