@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- FONT AWESOME -->
+  <script src="https://kit.fontawesome.com/06128cb24d.js" crossorigin="anonymous"></script>
   <!-- BOOTSTRAP -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
   <!-- CSS -->
@@ -22,7 +24,7 @@
     <div class="d-flex justify-content-center mt-5 p-5">
       <div class="d-flex flex-column align-items-center" >
 
-        <p style="color: #fff" class="fs-1">Tickets avaible on A FAIRE :</p>
+        <p style="color: #fff" class="fs-1">Tickets avaible on <%= ticketDate %> :</p>
 
         <!-- TRAINS LIST -->
         <ul class="list-group">
@@ -32,15 +34,17 @@
             <li   class="trainsFind list-group-item mb-3 d-flex align-items-center justify-content-between py-4">
 
               <!-- DEPARTURE / DESTINATION CITIES -->
-            <p class="mb-0 fw-bold fs-5"><%= journeysFound.departure %><span> / </span><%= journeysFound.arrival %></p>
+            <p class="mb-0 fw-bold fs-5"><%= journeysFound[i].departure %><span> / </span><%= journeysFound[i].arrival %></p>
 
             <!-- DEPARTURE TIME -->
-            <p class="mb-0">Train departure at : <%= journeysFound.departureTime %></p>
+            <p class="mb-0">Train departure at : <%= journeysFound[i].departureTime %></p>
 
             <!-- PRICE -->
             <div class="d-flex align-items-center">
-              <p class="mb-0 fw-bold fs-4"><%= journeysFound.price %> €</p>
-              <button type="button" class="btn btn-danger btn-lg ms-4">Ok</button>
+              <p class="mb-0 fw-bold fs-4"><%= journeysFound[i].price %> €</p>
+                <form action="/add-Ticket?ticketId=<%=journeysFound[i].id%>" method="post" >
+                  <button type="submit" class="btn btn-danger btn-lg ms-4">Ok</button>
+                </form>
             </div>
             </li>
           <% } %> 

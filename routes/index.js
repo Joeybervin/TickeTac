@@ -118,6 +118,8 @@ router.get('/homepage',async  function(req, res, next) {
     var user = req.session.user
   }
 
+  
+
 
 
 
@@ -128,8 +130,7 @@ router.get('/homepage',async  function(req, res, next) {
 //
 router.post('/journeyspage',async function(req, res, next) {
 
-  var ticketDate = new Date(req.body.date)
-  ticketDate.toLocaleDateString()
+  var ticketDate = req.body.date
 
   /* Je cherche le ticket que le user veut */
   var journeysFound = await journeyModel.find({
@@ -138,13 +139,21 @@ router.post('/journeyspage',async function(req, res, next) {
     date : req.body.date
   })
 
-  /* du plus petit prix au plus gros */
-  journeysFound.sort((a,b) => Number(a.price) - Number(b-price));
+  /* Si aucun ticket n'est trouvé =====> Nous redirigeons le user vers une page d'erreur */
 
- 
+    if (journeysFound.length == 0 || journeysFound == null) {
+      res.redirect('searchError')
+    }
+  //du plus petit prix dans l'ordre croissant 
+  journeysFound.sort((a,b) => Number(a.price) - Number(b.price));
 
-  res.render('journeyspage', { title: 'TickeTac', user: req.session.user, ticketDate, journeysFound});
+  res.render('journeyspage', { title: 'TickeTac', user: req.session.user, ticketDate , journeysFound});
 });
+
+router.get('/card', function(req, res, next) {
+  res.render('card', { title: 'TickeTac', user: req.session.user });
+});
+
 
 // MY LAST TRIP
 //
@@ -158,12 +167,12 @@ router.get('/mylasttrip', async function(req, res, next) {
   res.render('mylasttrip', { title: 'TickeTac', user , userJourneys });
 });
 
-router.get('/searchError', function(req, res, next) {
-  res.render('searchError', { title: 'TickeTac' });
-});
+ router.get('/searchError', function(req, res, next) {
+  res.render('searchError', { title: 'TickeTac', user: req.session.user });
+}); 
 
 router.get('/card', function(req, res, next) {
-  res.render('card', { title: 'TickeTac' });
+  res.render('card', { title: 'TickeTac', user: req.session.user });
 });
 
 
