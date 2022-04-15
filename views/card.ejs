@@ -42,38 +42,57 @@
           <!-- PRODUCTS LIST -->
           <tbody>
             <!-- Product -->
-            <!-- Boucle à commencer ici -->
             <% for (var i = 0; i < ticketsCard.length; i++) { %>
-            <tr>
+            <tr class="align-middle">
               <form action="/update-ticket" method="post">
                 <!-- INDEX -->
-                <th scope="row">1</th>
-                <!-- DEPARTURE :µ/ DESTINATION CITIES -->
-                <td><%= ticketsCard[i].departure %> <span> / </span> <%= ticketsCard[i].departure %> </td>
+                <th scope="row"><%= i + 1 %></th>
+                <!-- DEPARTURE / DESTINATION CITIES -->
+                <td><%= ticketsCard[i].departure %> <span> / </span> <%= ticketsCard[i].arrival %> </td>
                 <!-- DATE day/month/year-->
-                <td><%= ticketsCard[i].departure %> </td>
+                <td><%= ticketsCard[i].date %> </td>
                 <!-- DEPARTURE TIME -->
-                <td><%= ticketsCard[i].departure %> </td>
+                <td><%= ticketsCard[i].departureTime %> </td>
                 <!-- QUANTITY -->
-                <div class="input-group mb-3">
-                  <input type="text" class="form-control" placeholder="quanity" aria-label="quanity" aria-describedby="button-addon2" class="text-center" value=<%= ticketsCard[i].quantity name="quantity" %>>
-                  <button class="btn btn-outline-danger" type="submit" id="button-addon2"><i class="fa-solid fa-arrows-rotate"></i></button>
-                </div>
+                <td>
+                  <div class="input-group">
+                    <input type="text" class="form-control text-center" placeholder="quanity" aria-label="quanity" aria-describedby="button-addon2" value=<%= ticketsCard[i].quantity%> name="quantity" >
+                    <button class="btn btn-outline-danger" type="submit" id="button-addon2"><i class="fa-solid fa-arrows-rotate"></i></button>
+                  </div>
+                </td>
                 <!-- PRICE -->
-                <td><%= ticketsCard.price %>  €</td>
+                <td><%= ticketsCard[i].price %>  €</td>
                 <!-- Pour supprimer les éléments du panier -->
                 <td class="text-center" >
-                  <a href="/delete-ticket?ticketId=<%= i %> "></a>
-                  <button type="button" class="btn btn-outline-danger">
-                    <i class="fa-regular fa-trash-can"></i>
-                  </button>
-
+                  <a href="/delete-ticket?ticketId=<%= i %> ">
+                    <button type="button" class="btn btn-outline-danger">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                  </a>
                   <!-- Je récupère l'indice de mon ticket lors de l'update de la quantité -->
                   <input type="hidden" name="indice" value=<%= i %> >
                 </td>
               </form>
-            </tr>
+            </tr >
+            <!-- Si le panier est vide -->
             <% } %>
+            <!-- TOTAL -->
+            <tr class="table-danger fw-bold fs-5">
+
+              <td>Total</td>
+              <td colspan="4"></td>
+              <td class="me-auto" >??? €</td>
+              <td></td>
+            </tr>
+
+            <% if (ticketsCard.length == 0) { %>
+              <tr class="table-secondary text-center fw-bold">
+                <td colspan="7" >No ticket</td>
+              </tr>
+            <% } %>
+            
+
+            
           </tbody>
           
         </table>

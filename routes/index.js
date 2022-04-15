@@ -176,6 +176,7 @@ router.get('/mylasttrip', async function(req, res, next) {
 //
 router.get('/card', function(req, res, next) {
   var ticketsCard = req.session.ticketsCard
+  console.log(ticketsCard)
 
 
 
@@ -193,31 +194,37 @@ router.post('/add-ticket', async function(req, res, next) {
   }
 
   var ticketsCard = req.session.ticketsCard
+  var doublon = false
 
   /* Ajout produit au panier */
   var productId = req.query.ticketId;
   var journeyChoose = await journeyModel.findById(productId)
 
   /* Vérifions si le même ticket n'a pas déjà été ajouté */
-  for (var i = 0; i < tickersCard.length; i++) {
-    if (tickersCard[i].id == journeyChoose.id) {
-      tickersCard[i].qauntity += req.body.quantity
-    }
-    else {
-      ticketsCard.push({
-        id : journeyChoose.id,
-        departure: journeyChoose.departure,
-        arrival: journeyChoose.arrival,
-        date: journeyChoose.date,
-        departureTime: journeyChoose.departureTime,
-        price: journeyChoose.price,
-        quantity: req.body.quantity
-      })
-      
+  for (var i = 0; i < ticketsCard.length; i++) {
+    
+    if (ticketsCard[i].id == journeyChoose._id) {
+      ticketsCard[i].qauntity += req.body.quantity
+      console.log("ici 1")
+      console.log(ticketsCard[i].id)
+      console.log(journeyChoose.id)
+      var doublon = true
     }
 
+  }
 
-
+  if (!doublon && productId) {
+    console.log('ici 2')
+    ticketsCard.push({
+      id : journeyChoose.id,
+      departure: journeyChoose.departure,
+      arrival: journeyChoose.arrival,
+      date: new Date(journeyChoose.date),
+      departureTime: journeyChoose.departureTime,
+      price: journeyChoose.price,
+      quantity: req.body.quantity
+    })
+    
   }
 
 
@@ -234,7 +241,7 @@ router.post('/add-ticket', async function(req, res, next) {
 router.get('/delete-ticket', function(req, res, next) {
   var ticketsCard = req.session.ticketsCard
 
-  ticket.splice(req.query.ticketId,1)
+  ticketsCard.splice(req.query.ticketId,1)
 
   res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard  });
 });
