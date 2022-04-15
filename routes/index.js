@@ -144,7 +144,6 @@ router.post('/journeyspage', async function (req, res, next) {
 // MY LAST TRIP
 //
 router.get('/mylasttrip', async function (req, res, next) {
-
   /* Ma session */
   var user = req.session.user
 
