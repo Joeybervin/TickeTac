@@ -53,16 +53,16 @@
             <tr>
           
               <!-- DATE day/month/year-->
-              <td><%= userJourneys.journeysId.date %>2</td>
+              <td><%= date(userJourneys.journeysId[i].date) %></td>
               
               <!-- DEPARTURE / ARRIVAL CITIES -->
-              <td><%= userJourneys.journeysId.departure %> <span> / </span> <%= userJourneys.journeysId.arrival %></td>
+              <td><%= userJourneys.journeysId[i].departure %> <span> / </span> <%= userJourneys.journeysId[i].arrival %></td>
               
               <!-- DEPARTURE TIME -->
-              <td><%= userJourneys.journeysId.departureTime %></td>
+              <td><%= userJourneys.journeysId[i].departureTime %></td>
 
               <!-- PRICE -->
-              <td><%= userJourneys.journeysId.price %> €</td>
+              <td><%= userJourneys.journeysId[i].price %> €</td>
             </tr>
             <% } %>
             <% } %> 

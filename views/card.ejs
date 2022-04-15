@@ -20,6 +20,8 @@
     <!-- HEADER -->
     <%- include('./template/header') %> 
 
+
+
     <!-- FRONT-END HERE -->
     <div class="d-flex justify-content-center mt-5 p-5">
       <div class="d-flex flex-column align-items-center" >
@@ -41,55 +43,55 @@
           </thead>
           <!-- PRODUCTS LIST -->
           <tbody>
-            <!-- Product -->
-            <% for (var i = 0; i < ticketsCard.length; i++) { %>
-            <tr class="align-middle">
-              <form action="/update-ticket" method="post">
-                <!-- INDEX -->
-                <th scope="row"><%= i + 1 %></th>
-                <!-- DEPARTURE / DESTINATION CITIES -->
-                <td><%= ticketsCard[i].departure %> <span> / </span> <%= ticketsCard[i].arrival %> </td>
-                <!-- DATE day/month/year-->
-                <td><%= ticketsCard[i].date %> </td>
-                <!-- DEPARTURE TIME -->
-                <td><%= ticketsCard[i].departureTime %> </td>
-                <!-- QUANTITY -->
-                <td>
-                  <div class="input-group">
-                    <input type="text" class="form-control text-center" placeholder="quanity" aria-label="quanity" aria-describedby="button-addon2" value=<%= ticketsCard[i].quantity%> name="quantity" >
-                    <button class="btn btn-outline-danger" type="submit" id="button-addon2"><i class="fa-solid fa-arrows-rotate"></i></button>
-                  </div>
-                </td>
-                <!-- PRICE -->
-                <td><%= ticketsCard[i].price %>  €</td>
-                <!-- Pour supprimer les éléments du panier -->
-                <td class="text-center" >
-                  <a href="/delete-ticket?ticketId=<%= i %> ">
-                    <button type="button" class="btn btn-outline-danger">
-                      <i class="fa-regular fa-trash-can"></i>
-                    </button>
-                  </a>
-                  <!-- Je récupère l'indice de mon ticket lors de l'update de la quantité -->
-                  <input type="hidden" name="indice" value=<%= i %> >
-                </td>
-              </form>
-            </tr >
+            <% if (ticketsCard.length > 0) { %>
+              <!-- Product -->
+              <% for (var i = 0; i < ticketsCard.length; i++) { %>
+              <tr class="align-middle">
+                <form action="/update-ticket" method="post">
+                  <!-- INDEX -->
+                  <th scope="row"><%= i + 1 %></th>
+                  <!-- DEPARTURE / DESTINATION CITIES -->
+                  <td><%= ticketsCard[i].departure %> <span> / </span> <%= ticketsCard[i].arrival %> </td>
+                  <!-- DATE day/month/year-->
+                  <td><%= ticketsCard[i].date %> </td>
+                  <!-- DEPARTURE TIME -->
+                  <td><%= ticketsCard[i].departureTime %> </td>
+                  <!-- QUANTITY -->
+                  <td>
+                    <div class="input-group">
+                      <input type="text" class="form-control text-center" placeholder="quanity" aria-label="quanity" aria-describedby="button-addon2" value=<%= ticketsCard[i].quantity%> name="quantity" >
+                      <button class="btn btn-outline-danger" type="submit" id="button-addon2"><i class="fa-solid fa-arrows-rotate"></i></button>
+                    </div>
+                  </td>
+                  <!-- PRICE -->
+                  <td><%= ticketsCard[i].price %>  €</td>
+                  <!-- Pour supprimer les éléments du panier -->
+                  <td class="text-center" >
+                    <a href="/delete-ticket?ticketId=<%= i %> ">
+                      <button type="button" class="btn btn-outline-danger">
+                        <i class="fa-regular fa-trash-can"></i>
+                      </button>
+                    </a>
+                    <!-- Je récupère l'indice de mon ticket lors de l'update de la quantité -->
+                    <input type="hidden" name="indice" value=<%= i %> >
+                  </td>
+                </form>
+              </tr >
+            
+              <% } %>
+              <!-- TOTAL -->
+              <tr class="table-danger fw-bold fs-5">
+                <td>Total</td>
+                <td colspan="4"></td>
+                <td class="me-auto" ><%= totalCard %>  €</td>
+                <td></td>
+              </tr>
             <!-- Si le panier est vide -->
-            <% } %>
-            <!-- TOTAL -->
-            <tr class="table-danger fw-bold fs-5">
-
-              <td>Total</td>
-              <td colspan="4"></td>
-              <td class="me-auto" >??? €</td>
-              <td></td>
-            </tr>
-
-            <% if (ticketsCard.length == 0) { %>
+            <% } else { %>
               <tr class="table-secondary text-center fw-bold">
                 <td colspan="7" >No ticket</td>
               </tr>
-            <% } %>
+            <% } %> 
             
 
             
@@ -97,11 +99,15 @@
           
         </table>
 
+
+
         
         <!-- APPARITION POP-UP -->
+        <form action="/add-to-user-datas" method="post">
         <div class="ms-auto me-3">
-          <button type="button" class="btn btn-danger btn-lg ms-4">Confirm</button>
+          <button type="submit" class="btn btn-danger btn-lg ms-4">Confirm</button>
         </div>
+        </form>
         
           
       </div>
@@ -111,5 +117,7 @@
     <%- include('./template/footer') %> 
     
   </div>
+
+  <script src="/javascripts/script.js"></script>
 </body>
 </html>

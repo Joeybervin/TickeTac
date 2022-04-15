@@ -5,10 +5,24 @@ var router = express.Router();
 var journeyModel = require('../models/journey')
 var userModel = require('../models/user')
 
-
+/* Construction de ma database */
 var city = ["Paris","Marseille","Nantes","Lyon","Rennes","Melun","Bordeaux","Lille"]
 var date = ["2018-11-20","2018-11-21","2018-11-22","2018-11-23","2018-11-24"]
 
+/* Fonctions */
+function total(list) {
+  var total = 0;
+  var nbrTickets = 0;
+
+  for (var i = 0; i < list.length; i++) {
+    nbrTickets += Number(list[i].quantity)
+    total += (list[i].quantity * list[i].price)
+  }
+
+
+  return {total, nbrTickets}
+
+}
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -107,8 +121,9 @@ router.get('/logout', function(req, res, next) {
   res.redirect('/');
 });
 
-// ===================================================================================================================================
+// ======================================== JOURNEYS SEARCH PART  ========================================
 
+// ----------------- SEARCH PAGE
 // HOMEPAGE
 //
 router.get('/homepage',async  function(req, res, next) {
@@ -116,16 +131,21 @@ router.get('/homepage',async  function(req, res, next) {
     res.redirect('/')
   }else {
     var user = req.session.user
+    if (req.session.ticketsCard == undefined) {
+      req.session.ticketsCard =  []
+    }
   }
 
   
 
+  /* total */
+  var totalCard = total(req.session.ticketsCard)
+  
 
-
-
-  res.render('homepage', { title: 'TickeTac', user });
+  res.render('homepage', { title: 'TickeTac', user, ticketsCard : req.session.ticketsCard, nbrTickets: totalCard.nbrTickets });
 });
 
+// ----------------- SUCCESSFUL SEARCH
 // JOURNEYS PAGE
 //
 router.post('/journeyspage',async function(req, res, next) {
@@ -147,30 +167,20 @@ router.post('/journeyspage',async function(req, res, next) {
   //du plus petit prix dans l'ordre croissant 
   journeysFound.sort((a,b) => Number(a.price) - Number(b.price));
 
-  res.render('journeyspage', { title: 'TickeTac', user: req.session.user, ticketDate , journeysFound});
+  var totalCard = total(req.session.ticketsCard)
+
+  res.render('journeyspage', { title: 'TickeTac', user: req.session.user, ticketDate , journeysFound, nbrTickets : totalCard.nbrTickets});
 });
 
-
-
-
-// MY LAST TRIP
+// ----------------- UNSUCCESSFUL SEARCH
+// SEARCH ERROR
 //
-router.get('/mylasttrip', async function(req, res, next) {
-  /* Ma session */
-  var user = req.session.user
-
-  /* Je vais chercher tous les trajets de mon user */
-  var userJourneys = await userModel.findById(user.id).populate('journeysId').exec()
-
-  res.render('mylasttrip', { title: 'TickeTac', user , userJourneys });
-});
-
  router.get('/searchError', function(req, res, next) {
-  res.render('searchError', { title: 'TickeTac', user: req.session.user });
+  res.render('searchError', { title: 'TickeTac', user: req.session.user , ticketsCard : req.session.ticketsCard });
 }); 
 
 
-// ======================================== USER CART ========================================
+// ======================================== USER CART PART ========================================
 
 // MY CARD
 //
@@ -178,10 +188,11 @@ router.get('/card', function(req, res, next) {
   var ticketsCard = req.session.ticketsCard
   console.log(ticketsCard)
 
+  /* total */
+  var totalCard = total(ticketsCard)
 
 
-
-  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard  });
+  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets  });
 });
 
 // MY CARD
@@ -227,13 +238,10 @@ router.post('/add-ticket', async function(req, res, next) {
     
   }
 
+  /* Total */
+  var totalCard = total(ticketsCard)
 
-  console.log(req.body.quantity)
-  
-  console.log(productId)
-  console.log(ticketsCard)
-
-  res.render('homepage', { title: 'TickeTac', user: req.session.user , ticketsCard : req.session.ticketsCard});
+  res.render('homepage', { title: 'TickeTac', user: req.session.user , ticketsCard : req.session.ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets});
 });
 
 // MY CARD
@@ -243,7 +251,10 @@ router.get('/delete-ticket', function(req, res, next) {
 
   ticketsCard.splice(req.query.ticketId,1)
 
-  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard  });
+  /* Total */
+  var totalCard =  total(ticketsCard)
+
+  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets  });
 });
 
 // MY CARD
@@ -254,11 +265,60 @@ router.post('/update-ticket', function(req, res, next) {
   /* J'update la quantité en récupérant : req.body.indice et req.body.quantity */
   ticketsCard[Number(req.body.indice)].quantity = req.body.quantity
 
-  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard  });
+  /* Total */
+  var totalCard = total(ticketsCard)
+  console.log(ticketsCard)
+
+  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets  });
+});
+
+
+// ======================================== USER DATAS PART ========================================
+
+// ADD TO USER DATAS
+//
+router.post('/add-to-user-datas', async function(req, res, next) {
+  var ticketsCard = req.session.ticketsCard
+
+
+/* J'ajoute mon panier à mon user */
+  for (var i = 0; i < ticketsCard.length; i++) {
+    await userModel.updateOne(
+      { _id : req.session.user.id },
+      {$push : {journeysId : ticketsCard[i].id}}
+      );
+
+  }
+
+  /* total */
+  var totalCard = total(req.session.user)
+
+  var ticketsCard = req.session.ticketsCard
+  /* Je vide le panier */
+  ticketsCard.splice(0, ticketsCard.length)
+
+  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets  });
+});
+
+// MY LAST TRIP
+//
+router.get('/mylasttrip', async function(req, res, next) {
+  /* Ma session */
+  var user = req.session.user
+
+  /* Je vais chercher tous les trajets de mon user */
+  var userJourneys = await userModel.findById(user.id).populate('journeysId').exec()
+
+  /* Function total ===> mais pour récupérer le nombre d'articles dans le panier */
+  var totalCard = total(req.session.ticketsCard)
+  console.log(userJourneys.journeysId)
+
+  res.render('mylasttrip', { title: 'TickeTac', user , userJourneys, nbrTickets : totalCard.nbrTickets });
 });
 
 
 
+// ======================================== CREATION DATABASE PART ========================================
 
 // Remplissage de la base de donnée, une fois suffit
 router.get('/save', async function(req, res, next) {
