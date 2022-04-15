@@ -36,4 +36,26 @@ a,li {
   width : 75vw;
 }
 
-/* CARD */
+/* INDEX : login */
+  /* Pour afficher le mot de passe */
+.wrapper{
+  display: flex;
+  align-items: center;
+  width: 300px;
+  border-radius: 5px;
+  padding: 2px;
+}
+#pass:focus{
+  outline: none;
+}
+#pass{
+  width: 88%;
+  border: none;
+  border-right: 0.25px rgb(88, 81, 81) solid;
+}
+#visiblity-toggle{
+  color: grey;
+  cursor: pointer;
+  margin: 0 2px;
+}
+
