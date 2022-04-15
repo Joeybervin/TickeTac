@@ -6,12 +6,12 @@ var journeyModel = require('../models/journey')
 var userModel = require('../models/user')
 
 
-var city = ["Paris","Marseille","Nantes","Lyon","Rennes","Melun","Bordeaux","Lille"]
-var date = ["2018-11-20","2018-11-21","2018-11-22","2018-11-23","2018-11-24"]
+var city = ["Paris", "Marseille", "Nantes", "Lyon", "Rennes", "Melun", "Bordeaux", "Lille"]
+var date = ["2018-11-20", "2018-11-21", "2018-11-22", "2018-11-23", "2018-11-24"]
 
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   var alreadyMember = false;
   var newUser = false;
   var user = null;
@@ -23,7 +23,7 @@ router.get('/', function(req, res, next) {
 
 // SIGN UP
 // 
-router.post('/signUp', async function(req, res, next) {
+router.post('/signUp', async function (req, res, next) {
   var alreadyMember = false;
 
   /* Véfificaton si le compte éxiste déjà */
@@ -48,7 +48,7 @@ router.post('/signUp', async function(req, res, next) {
     req.session.user = {
       email: newUserSaved.email,
       firstName: newUserSaved.firstName,
-      id : newUserSaved._id,
+      id: newUserSaved._id,
     }
 
     /* Redirige l'utilisateur vers la homepage */
@@ -56,7 +56,7 @@ router.post('/signUp', async function(req, res, next) {
   }
 
   // __________________________ ECHEC  __________________________
-   /* Pour renvoyé un message d'erreur */
+  /* Pour renvoyé un message d'erreur */
   else {
     /* Affichage message erreur */
     alreadyMember = true
@@ -71,21 +71,22 @@ router.post('/signUp', async function(req, res, next) {
 
 // SIGN IN
 //
-router.post('/signIn', async function(req, res, next) {
+router.post('/signIn', async function (req, res, next) {
 
   var newUser, alreadyMember = false;
 
   /* Vérifications si le compte existe */
   var account = await userModel.findOne({
     email: req.body.email,
-    password: req.body.password });
+    password: req.body.password
+  });
 
   // __________________________ SUCCESS  __________________________
   if (account !== null) {
     req.session.user = {
       email: account.email,
       firstName: account.firstName,
-      id : account._id,
+      id: account._id,
     }
     res.redirect('/homepage')
   }
@@ -97,12 +98,12 @@ router.post('/signIn', async function(req, res, next) {
     res.render('index', { title: 'TickeTac', newUser, alreadyMember });
   }
 
-  
+
 });
 
 // LOG OUT
 //
-router.get('/logout', function(req, res, next) {
+router.get('/logout', function (req, res, next) {
   req.session.user = null
   res.redirect('/');
 });
@@ -111,10 +112,10 @@ router.get('/logout', function(req, res, next) {
 
 // HOMEPAGE
 //
-router.get('/homepage',async  function(req, res, next) {
+router.get('/homepage', async function (req, res, next) {
   if (req.session.user === null) {
     res.redirect('/')
-  }else {
+  } else {
     var user = req.session.user
   }
 
@@ -123,69 +124,76 @@ router.get('/homepage',async  function(req, res, next) {
 
 // JOURNEYS PAGE
 //
-router.post('/journeyspage', async function(req, res, next) {
-   // Recherche de trajet à une date précise
-   var departureExist = await journeyModel.find({ departure: req.body.departure });
-   var arrivalExist = await journeyModel.find({ arrival: req.body.destination });
-   var dateExist = await journeyModel.find({ departureTime: req.body.departureTime });
-     /* Si aucun train disponible pour la date sélectionnée => affichage page erreur */
-   if (dateExist.length == 0) {
-     res.redirect('/searchError')
-     /* Si un ou plusieurs trajets possibles pour la date sélectionnée => affichage page trajets possibles */
-   }else if (dateExist && departureExist && arrivalExist){
-     res.redirect('/journeyspage')
-   };
-  res.render('journeyspage', { title: 'TickeTac', dateExist, departureExist, arrivalExist, user: req.session.user });
+router.post('/journeyspage', async function (req, res, next) {
+  // Recherche de trajet à une date précise
+  var arrivalExist = await journeyModel.find({ arrival: req.body.destination, departure: req.body.departure, date: req.body.departureTime });
+    /* Si tous les champs de saisie... */
+  if (req.body.destination && req.body.departure && req.body.departureTime) {
+    if (arrivalExist.length != 0) {  /* ...correspondent à un ou plusieurs trajets possibles pour la date sélectionnée => affichage page trajets possibles */
+      var arrivalExist = await journeyModel.find({ arrival: req.body.destination, departure: req.body.departure, date: req.body.departureTime });
+      res.render('journeyspage', { title: 'TickeTac', journeys: arrivalExist, user: req.session.user });
+    } else { /* ...ne correspondent pas => affichage page erreur */
+      res.redirect('/searchError')
+    }
+      } else { /* sinon => affichage de la homepage */
+    res.redirect('/homepage')
+      }
 });
+
 
 // MY LAST TRIP
 //
-router.get('/mylasttrip', async function(req, res, next) {
+router.get('/mylasttrip', async function (req, res, next) {
   /* Ma session */
   var user = req.session.user
 
   /* Je vais chercher tous les trajets de mon user */
   var userJourneys = await userModel.findById(user.id).populate('journeysId').exec()
 
-  res.render('mylasttrip', { title: 'TickeTac', user: req.session.user , userJourneys });
+  res.render('mylasttrip', { title: 'TickeTac', user: req.session.user, userJourneys });
 });
 
 // ERROR PAGE
 //
-router.get('/searchError', function(req, res, next) {
+router.get('/searchError', function (req, res, next) {
   res.render('searchError', { title: 'TickeTac', user: req.session.user });
 });
 
 // CARD PAGE
 //
-router.get('/card', function(req, res, next) {
+router.get('/card', function (req, res, next) {
+  var alreadyExist = false;
+
+
+
+
   res.render('card', { title: 'TickeTac', user: req.session.user });
 });
 
 
 // Remplissage de la base de donnée, une fois suffit
-router.get('/save', async function(req, res, next) {
+router.get('/save', async function (req, res, next) {
 
   // How many journeys we want
   var count = 300
 
   // Save  ---------------------------------------------------
-    for(var i = 0; i< count; i++){
+  for (var i = 0; i < count; i++) {
 
     departureCity = city[Math.floor(Math.random() * Math.floor(city.length))]
     arrivalCity = city[Math.floor(Math.random() * Math.floor(city.length))]
 
-    if(departureCity != arrivalCity){
+    if (departureCity != arrivalCity) {
 
-      var newUser = new journeyModel ({
-        departure: departureCity , 
-        arrival: arrivalCity, 
+      var newUser = new journeyModel({
+        departure: departureCity,
+        arrival: arrivalCity,
         date: date[Math.floor(Math.random() * Math.floor(date.length))],
-        departureTime:Math.floor(Math.random() * Math.floor(23)) + ":00",
+        departureTime: Math.floor(Math.random() * Math.floor(23)) + ":00",
         price: Math.floor(Math.random() * Math.floor(125)) + 25,
       });
-       
-       await newUser.save();
+
+      await newUser.save();
 
     }
 
