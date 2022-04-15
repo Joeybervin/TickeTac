@@ -31,16 +31,6 @@
 
           <p style="color: #fff" class="fs-1">Tickets avaible on :</p>
 
-
-        <p style="color: #fff" class="fs-1">Tickets avaible on <%= date(ticketDate) %> :</p>
-
-
-
-            <!-- BOUCLE A COMMENCER ICI -->
-            <% for(var i=0; i<journeys.length; i++){ %>
-              <form action="/card" method="POST">
-                <li class="trainsFind list-group-item mb-3 d-flex align-items-center justify-content-between py-4">
-
           <!-- BOUCLE A COMMENCER ICI -->
           <% for (var i = 0; i < journeysFound.length; i++) {%>
             <form action="/add-ticket?ticketId=<%=journeysFound[i].id%>" method="post" >
