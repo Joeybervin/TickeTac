@@ -5,7 +5,7 @@ var router = express.Router();
 var journeyModel = require('../models/journey')
 var userModel = require('../models/user')
 
-/* Construction de ma database */
+
 var city = ["Paris","Marseille","Nantes","Lyon","Rennes","Melun","Bordeaux","Lille"]
 var date = ["2018-11-20","2018-11-21","2018-11-22","2018-11-23","2018-11-24"]
 
@@ -25,7 +25,7 @@ function total(list) {
 }
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   var alreadyMember = false;
   var newUser = false;
   var user = null;
@@ -37,7 +37,7 @@ router.get('/', function(req, res, next) {
 
 // SIGN UP
 // 
-router.post('/signUp', async function(req, res, next) {
+router.post('/signUp', async function (req, res, next) {
   var alreadyMember = false;
 
   /* Véfificaton si le compte éxiste déjà */
@@ -62,7 +62,7 @@ router.post('/signUp', async function(req, res, next) {
     req.session.user = {
       email: newUserSaved.email,
       firstName: newUserSaved.firstName,
-      id : newUserSaved._id,
+      id: newUserSaved._id,
     }
 
     /* Redirige l'utilisateur vers la homepage */
@@ -70,7 +70,7 @@ router.post('/signUp', async function(req, res, next) {
   }
 
   // __________________________ ECHEC  __________________________
-   /* Pour renvoyé un message d'erreur */
+  /* Pour renvoyé un message d'erreur */
   else {
     /* Affichage message erreur */
     alreadyMember = true
@@ -85,21 +85,22 @@ router.post('/signUp', async function(req, res, next) {
 
 // SIGN IN
 //
-router.post('/signIn', async function(req, res, next) {
+router.post('/signIn', async function (req, res, next) {
 
   var newUser, alreadyMember = false;
 
   /* Vérifications si le compte existe */
   var account = await userModel.findOne({
     email: req.body.email,
-    password: req.body.password });
+    password: req.body.password
+  });
 
   // __________________________ SUCCESS  __________________________
   if (account !== null) {
     req.session.user = {
       email: account.email,
       firstName: account.firstName,
-      id : account._id,
+      id: account._id,
     }
     res.redirect('/homepage')
   }
@@ -111,12 +112,12 @@ router.post('/signIn', async function(req, res, next) {
     res.render('index', { title: 'TickeTac', newUser, alreadyMember, user: req.session.user });
   }
 
-  
+
 });
 
 // LOG OUT
 //
-router.get('/logout', function(req, res, next) {
+router.get('/logout', function (req, res, next) {
   req.session.user = null
   res.redirect('/');
 });
@@ -126,15 +127,16 @@ router.get('/logout', function(req, res, next) {
 // ----------------- SEARCH PAGE
 // HOMEPAGE
 //
-router.get('/homepage',async  function(req, res, next) {
+router.get('/homepage', async function (req, res, next) {
   if (req.session.user === null) {
     res.redirect('/')
-  }else {
+  } else {
     var user = req.session.user
     if (req.session.ticketsCard == undefined) {
       req.session.ticketsCard =  []
     }
   }
+
 
   
 
@@ -143,11 +145,14 @@ router.get('/homepage',async  function(req, res, next) {
   
 
   res.render('homepage', { title: 'TickeTac', user, ticketsCard : req.session.ticketsCard, nbrTickets: totalCard.nbrTickets });
+
+
 });
 
 // ----------------- SUCCESSFUL SEARCH
 // JOURNEYS PAGE
 //
+
 router.post('/journeyspage',async function(req, res, next) {
 
   var ticketDate = req.body.date
@@ -297,16 +302,19 @@ router.post('/add-to-user-datas', async function(req, res, next) {
   var totalCard = total(req.session.user)
 
   res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets  });
+
 });
+
 
 // MY LAST TRIP
 //
-router.get('/mylasttrip', async function(req, res, next) {
+router.get('/mylasttrip', async function (req, res, next) {
   /* Ma session */
   var user = req.session.user
 
   /* Je vais chercher tous les trajets de mon user */
   var userJourneys = await userModel.findById(user.id).populate('journeysId').exec()
+
 
   /* Function total ===> mais pour récupérer le nombre d'articles dans le panier */
   var totalCard = total(req.session.ticketsCard)
@@ -319,28 +327,28 @@ router.get('/mylasttrip', async function(req, res, next) {
 // ======================================== CREATION DATABASE PART ========================================
 
 // Remplissage de la base de donnée, une fois suffit
-router.get('/save', async function(req, res, next) {
+router.get('/save', async function (req, res, next) {
 
   // How many journeys we want
   var count = 300
 
   // Save  ---------------------------------------------------
-    for(var i = 0; i< count; i++){
+  for (var i = 0; i < count; i++) {
 
     departureCity = city[Math.floor(Math.random() * Math.floor(city.length))]
     arrivalCity = city[Math.floor(Math.random() * Math.floor(city.length))]
 
-    if(departureCity != arrivalCity){
+    if (departureCity != arrivalCity) {
 
-      var newUser = new journeyModel ({
-        departure: departureCity , 
-        arrival: arrivalCity, 
+      var newUser = new journeyModel({
+        departure: departureCity,
+        arrival: arrivalCity,
         date: date[Math.floor(Math.random() * Math.floor(date.length))],
-        departureTime:Math.floor(Math.random() * Math.floor(23)) + ":00",
+        departureTime: Math.floor(Math.random() * Math.floor(23)) + ":00",
         price: Math.floor(Math.random() * Math.floor(125)) + 25,
       });
-       
-       await newUser.save();
+
+      await newUser.save();
 
     }
 
