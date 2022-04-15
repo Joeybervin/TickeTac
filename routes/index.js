@@ -186,7 +186,7 @@ router.post('/journeyspage',async function(req, res, next) {
 //
 router.get('/card', function(req, res, next) {
   var ticketsCard = req.session.ticketsCard
-  console.log(ticketsCard)
+  
 
   /* total */
   var totalCard = total(ticketsCard)
@@ -290,12 +290,11 @@ router.post('/add-to-user-datas', async function(req, res, next) {
 
   }
 
-  /* total */
-  var totalCard = total(req.session.user)
-
-  var ticketsCard = req.session.ticketsCard
   /* Je vide le panier */
   ticketsCard.splice(0, ticketsCard.length)
+
+  /* total */
+  var totalCard = total(req.session.user)
 
   res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets  });
 });
@@ -315,7 +314,6 @@ router.get('/mylasttrip', async function(req, res, next) {
 
   res.render('mylasttrip', { title: 'TickeTac', user , userJourneys, nbrTickets : totalCard.nbrTickets });
 });
-
 
 
 // ======================================== CREATION DATABASE PART ========================================
