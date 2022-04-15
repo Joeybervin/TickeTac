@@ -6,9 +6,23 @@ var journeyModel = require('../models/journey')
 var userModel = require('../models/user')
 
 
-var city = ["Paris", "Marseille", "Nantes", "Lyon", "Rennes", "Melun", "Bordeaux", "Lille"]
-var date = ["2018-11-20", "2018-11-21", "2018-11-22", "2018-11-23", "2018-11-24"]
+var city = ["Paris","Marseille","Nantes","Lyon","Rennes","Melun","Bordeaux","Lille"]
+var date = ["2018-11-20","2018-11-21","2018-11-22","2018-11-23","2018-11-24"]
 
+/* Fonctions */
+function total(list) {
+  var total = 0;
+  var nbrTickets = 0;
+
+  for (var i = 0; i < list.length; i++) {
+    nbrTickets += Number(list[i].quantity)
+    total += (list[i].quantity * list[i].price)
+  }
+
+
+  return {total, nbrTickets}
+
+}
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -19,7 +33,7 @@ router.get('/', function (req, res, next) {
 });
 
 
-// ===================================================== USER CONNEXION PART  =====================================================
+// ======================================== USER CONNEXION PART  ========================================
 
 // SIGN UP
 // 
@@ -95,7 +109,7 @@ router.post('/signIn', async function (req, res, next) {
     /* Affichage message erreur */
     newUser = true
 
-    res.render('index', { title: 'TickeTac', newUser, alreadyMember });
+    res.render('index', { title: 'TickeTac', newUser, alreadyMember, user: req.session.user });
   }
 
 
@@ -108,8 +122,9 @@ router.get('/logout', function (req, res, next) {
   res.redirect('/');
 });
 
-// ===================================================================================================================================
+// ======================================== JOURNEYS SEARCH PART  ========================================
 
+// ----------------- SEARCH PAGE
 // HOMEPAGE
 //
 router.get('/homepage', async function (req, res, next) {
@@ -117,27 +132,177 @@ router.get('/homepage', async function (req, res, next) {
     res.redirect('/')
   } else {
     var user = req.session.user
+    if (req.session.ticketsCard == undefined) {
+      req.session.ticketsCard =  []
+    }
   }
 
-  res.render('homepage', { title: 'TickeTac', user: req.session.user });
+
+  
+
+  /* total */
+  var totalCard = total(req.session.ticketsCard)
+  
+
+  res.render('homepage', { title: 'TickeTac', user, ticketsCard : req.session.ticketsCard, nbrTickets: totalCard.nbrTickets });
+
+
 });
 
+// ----------------- SUCCESSFUL SEARCH
 // JOURNEYS PAGE
 //
-router.post('/journeyspage', async function (req, res, next) {
-  // Recherche de trajet à une date précise
-  var arrivalExist = await journeyModel.find({ arrival: req.body.destination, departure: req.body.departure, date: req.body.departureTime });
-    /* Si tous les champs de saisie... */
-  if (req.body.destination && req.body.departure && req.body.departureTime) {
-    if (arrivalExist.length != 0) {  /* ...correspondent à un ou plusieurs trajets possibles pour la date sélectionnée => affichage page trajets possibles */
-      var arrivalExist = await journeyModel.find({ arrival: req.body.destination, departure: req.body.departure, date: req.body.departureTime });
-      res.render('journeyspage', { title: 'TickeTac', journeys: arrivalExist, user: req.session.user });
-    } else { /* ...ne correspondent pas => affichage page erreur */
-      res.redirect('/searchError')
+
+router.post('/journeyspage',async function(req, res, next) {
+
+  var ticketDate = req.body.date
+
+  /* Je cherche le ticket que le user veut */
+  var journeysFound = await journeyModel.find({
+    departure : req.body.departure,
+    arrival : req.body.arrival,
+    date : req.body.date
+  })
+
+  /* Si aucun ticket n'est trouvé =====> Nous redirigeons le user vers une page d'erreur */
+
+    if (journeysFound.length == 0 || journeysFound == null) {
+      res.redirect('searchError')
     }
-      } else { /* sinon => affichage de la homepage */
-    res.redirect('/homepage')
-      }
+  //du plus petit prix dans l'ordre croissant 
+  journeysFound.sort((a,b) => Number(a.price) - Number(b.price));
+
+  var totalCard = total(req.session.ticketsCard)
+
+  res.render('journeyspage', { title: 'TickeTac', user: req.session.user, ticketDate , journeysFound, nbrTickets : totalCard.nbrTickets});
+});
+
+// ----------------- UNSUCCESSFUL SEARCH
+// SEARCH ERROR
+//
+ router.get('/searchError', function(req, res, next) {
+  res.render('searchError', { title: 'TickeTac', user: req.session.user , ticketsCard : req.session.ticketsCard });
+}); 
+
+
+// ======================================== USER CART PART ========================================
+
+// MY CARD
+//
+router.get('/card', function(req, res, next) {
+  var ticketsCard = req.session.ticketsCard
+  
+
+  /* total */
+  var totalCard = total(ticketsCard)
+
+
+  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets  });
+});
+
+// MY CARD
+//
+router.post('/add-ticket', async function(req, res, next) {
+
+  /* Je créer une session ppur mon panier */
+  if (req.session.ticketsCard == undefined) {
+    req.session.ticketsCard = []
+  }
+
+  var ticketsCard = req.session.ticketsCard
+  var doublon = false
+
+  /* Ajout produit au panier */
+  var productId = req.query.ticketId;
+  var journeyChoose = await journeyModel.findById(productId)
+
+  /* Vérifions si le même ticket n'a pas déjà été ajouté */
+  for (var i = 0; i < ticketsCard.length; i++) {
+    
+    if (ticketsCard[i].id == journeyChoose._id) {
+      ticketsCard[i].qauntity += req.body.quantity
+      console.log("ici 1")
+      console.log(ticketsCard[i].id)
+      console.log(journeyChoose.id)
+      var doublon = true
+    }
+
+  }
+
+  if (!doublon && productId) {
+    console.log('ici 2')
+    ticketsCard.push({
+      id : journeyChoose.id,
+      departure: journeyChoose.departure,
+      arrival: journeyChoose.arrival,
+      date: new Date(journeyChoose.date),
+      departureTime: journeyChoose.departureTime,
+      price: journeyChoose.price,
+      quantity: req.body.quantity
+    })
+    
+  }
+
+  /* Total */
+  var totalCard = total(ticketsCard)
+
+  res.render('homepage', { title: 'TickeTac', user: req.session.user , ticketsCard : req.session.ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets});
+});
+
+// MY CARD
+//
+router.get('/delete-ticket', function(req, res, next) {
+  var ticketsCard = req.session.ticketsCard
+
+  ticketsCard.splice(req.query.ticketId,1)
+
+  /* Total */
+  var totalCard =  total(ticketsCard)
+
+  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets  });
+});
+
+// MY CARD
+//
+router.post('/update-ticket', function(req, res, next) {
+  var ticketsCard = req.session.ticketsCard
+
+  /* J'update la quantité en récupérant : req.body.indice et req.body.quantity */
+  ticketsCard[Number(req.body.indice)].quantity = req.body.quantity
+
+  /* Total */
+  var totalCard = total(ticketsCard)
+  console.log(ticketsCard)
+
+  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets  });
+});
+
+
+// ======================================== USER DATAS PART ========================================
+
+// ADD TO USER DATAS
+//
+router.post('/add-to-user-datas', async function(req, res, next) {
+  var ticketsCard = req.session.ticketsCard
+
+
+/* J'ajoute mon panier à mon user */
+  for (var i = 0; i < ticketsCard.length; i++) {
+    await userModel.updateOne(
+      { _id : req.session.user.id },
+      {$push : {journeysId : ticketsCard[i].id}}
+      );
+
+  }
+
+  /* Je vide le panier */
+  ticketsCard.splice(0, ticketsCard.length)
+
+  /* total */
+  var totalCard = total(req.session.user)
+
+  res.render('card', { title: 'TickeTac', user: req.session.user, ticketsCard, totalCard : totalCard.total , nbrTickets : totalCard.nbrTickets  });
+
 });
 
 
@@ -150,26 +315,16 @@ router.get('/mylasttrip', async function (req, res, next) {
   /* Je vais chercher tous les trajets de mon user */
   var userJourneys = await userModel.findById(user.id).populate('journeysId').exec()
 
-  res.render('mylasttrip', { title: 'TickeTac', user: req.session.user, userJourneys });
+
+  /* Function total ===> mais pour récupérer le nombre d'articles dans le panier */
+  var totalCard = total(req.session.ticketsCard)
+  console.log(userJourneys.journeysId)
+
+  res.render('mylasttrip', { title: 'TickeTac', user , userJourneys, nbrTickets : totalCard.nbrTickets });
 });
 
-// ERROR PAGE
-//
-router.get('/searchError', function (req, res, next) {
-  res.render('searchError', { title: 'TickeTac', user: req.session.user });
-});
 
-// CARD PAGE
-//
-router.get('/card', function (req, res, next) {
-  var alreadyExist = false;
-
-
-
-
-  res.render('card', { title: 'TickeTac', user: req.session.user });
-});
-
+// ======================================== CREATION DATABASE PART ========================================
 
 // Remplissage de la base de donnée, une fois suffit
 router.get('/save', async function (req, res, next) {

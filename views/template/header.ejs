@@ -8,23 +8,41 @@
         </a>
 
         <div>
-           <ul class="d-flex flex-row navbar-nav ms-auto mb-2 mb-lg-0 ">
+          <ul class="d-flex flex-row navbar-nav ms-auto mb-2 mb-lg-0 ">
 
             
             <!-- Si l'utilisateur est connecté nous affichons son nom -->
             <% if (user) {%> 
-              <!-- Pour se déconnecté -->
-              <li class="nav-item px-2 fs-5 me-4">
-                <a href="/logout" style="color:rgb(238, 11, 11)" class="nav-link" aria-current="page" href="#">log out</a>
-              </li>
 
-              <!-- Prénom de l'utilisateur -->
+              <!-- Panier -->
+
+              <button type="button" class="btn btn-link position-relative p-0 pt-1">
+                <a href="/card" style="color:black" class="nav-link pb-0" aria-current="page" >
+                  <img width="30" height="30"  src="/images/shopping-bag.png" alt="card logo">
+                </a>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  <%= nbrTickets %>
+                </span>
+              </button>
+
               <li class="nav-item px-2 fs-5 me-4">
-                <a style="color:black"  href="#" class="nav-link" aria-current="page" href="#">Bonjour, <%= user.firstName %> </a>
+
+
+              </li>
+            
+              <!-- Prébom de l'utilisateur -->
+
+              <li class="nav-item px-2 fs-5 me-4">
+                <a href="/mylasttrip?id=<%= user.id%>" style="color:black" class="nav-link" aria-current="page">Bonjour, <%= user.firstName %> </a>
               </li>
 
               <li class="nav-item px-2 fs-5">
-                <a href="/mylasttrip?id=<%= user.id%>" style="color:black"  class="nav-link" href="#">My last trip</a>
+                <a href="/mylasttrip?id=<%= user.id%>" style="color:black"  class="nav-link">My last trip</a>
+              </li>
+
+               <!-- Pour se déconnecté -->
+               <li class="nav-item px-2 fs-5 me-4">
+                <a href="/logout" style="color:rgb(238, 11, 11)" class="nav-link" aria-current="page" href="#">log out</a>
               </li>
 
               <!-- Si l'utilisateur n'est pas connecté -->
